@@ -4,7 +4,7 @@ import { Handle, Position, type NodeProps } from "@xyflow/react"
 import {
   nodeRegistry,
   type StepNodeType,
-} from "@/features/workflows/nodes/node-registry"
+} from "./node-registry"
 import { cn } from "@/lib/utils"
 
 function StepNodeComponent({ data, selected }: NodeProps<StepNodeType>) {
