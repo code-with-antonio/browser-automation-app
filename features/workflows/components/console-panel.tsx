@@ -9,26 +9,36 @@ import {
 } from "@/components/ui/resizable"
 
 import { InspectorPanel } from "@/features/workflows/components/inspector-panel"
-import { LogsPanel, type StepSelection } from "@/features/workflows/components/logs-panel"
+import {
+  LogsPanel,
+  type ConsoleSelection,
+} from "@/features/workflows/components/logs-panel"
 
-// The run console below the canvas. It owns which step is selected: the logs on
-// the left drive the selection, and while a step is selected the InspectorPanel
-// on the right shows its output. Clicking the selected step again clears it.
+// True when two selections point at the same thing — same kind, same run, and
+// for a step the same node. Clicking the active selection again clears it.
+function isSameSelection(a: ConsoleSelection, b: ConsoleSelection) {
+  if (a.kind !== b.kind) return false
+  if (a.runId !== b.runId) return false
+  return a.kind === "step" && b.kind === "step" ? a.nodeId === b.nodeId : true
+}
+
+// The run console below the canvas. It owns what's selected: the logs on the
+// left drive the selection, and the InspectorPanel on the right shows either the
+// selected step's output or the selected run's replay. Clicking the active
+// selection again clears it.
 export function ConsolePanel() {
-  const [selected, setSelected] = useState<StepSelection | null>(null)
+  const [selected, setSelected] = useState<ConsoleSelection | null>(null)
 
-  const toggle = (selection: StepSelection) => {
+  const toggle = (selection: ConsoleSelection) => {
     setSelected((prev) =>
-      prev && prev.runId === selection.runId && prev.nodeId === selection.nodeId
-        ? null
-        : selection
+      prev && isSameSelection(prev, selection) ? null : selection
     )
   }
 
   return (
     <ResizablePanelGroup orientation="horizontal" className="size-full">
       <ResizablePanel minSize="12rem">
-        <LogsPanel selected={selected} onSelectStep={toggle} />
+        <LogsPanel selected={selected} onSelect={toggle} />
       </ResizablePanel>
       {selected && (
         <>

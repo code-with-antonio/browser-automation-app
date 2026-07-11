@@ -1,6 +1,7 @@
 "use client"
 
 import prettyMilliseconds from "pretty-ms"
+import { MonitorPlay } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -14,9 +15,20 @@ import type { RunStep } from "@/features/workflows/tasks/run-workflow"
 // A step is identified across the whole console by which run it belongs to and
 // which node it is — the same node id recurs across runs, so both are needed.
 export interface StepSelection {
+  kind: "step"
   runId: string
   nodeId: string
 }
+
+// The replay of a whole run, not a single step — identified by its run alone.
+export interface ReplaySelection {
+  kind: "replay"
+  runId: string
+}
+
+// What the console can have selected: one step's output, or one run's replay.
+// Only one is active at a time.
+export type ConsoleSelection = StepSelection | ReplaySelection
 
 // One step row: the node's icon, its title, and how long it took. It spins while
 // running, reads red when it failed, and dims when it never ran. Clicking it
@@ -41,7 +53,7 @@ function StepRow({
   return (
     <button
       type="button"
-      onClick={() => onSelect({ runId: run.id, nodeId: step.nodeId })}
+      onClick={() => onSelect({ kind: "step", runId: run.id, nodeId: step.nodeId })}
       className={cn(
         "flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-xs hover:bg-accent",
         isSelected && "bg-accent",
@@ -61,15 +73,43 @@ function StepRow({
   )
 }
 
+// The replay row for a finished run: it sits with the step rows and selects the
+// same way, but it stands for the whole run's recording rather than one step.
+function ReplayRow({
+  run,
+  isSelected,
+  onSelect,
+}: {
+  run: ConsoleRun
+  isSelected: boolean
+  onSelect: (selection: ReplaySelection) => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect({ kind: "replay", runId: run.id })}
+      className={cn(
+        "flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-xs hover:bg-accent",
+        isSelected && "bg-accent"
+      )}
+    >
+      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+        <MonitorPlay className="size-3.5" />
+      </span>
+      <span className="truncate font-medium">Replay</span>
+    </button>
+  )
+}
+
 // The list of runs, newest first, each with its steps below it. Reads the shared
 // realtime run history and reports step clicks up to the ConsolePanel, which owns
 // the selection.
 export function LogsPanel({
   selected,
-  onSelectStep,
+  onSelect,
 }: {
-  selected: StepSelection | null
-  onSelectStep: (selection: StepSelection) => void
+  selected: ConsoleSelection | null
+  onSelect: (selection: ConsoleSelection) => void
 }) {
   const runs = useConsoleRuns()
 
@@ -95,11 +135,24 @@ export function LogsPanel({
               run={run}
               step={step}
               isSelected={
-                selected?.runId === run.id && selected.nodeId === step.nodeId
+                selected?.kind === "step" &&
+                selected.runId === run.id &&
+                selected.nodeId === step.nodeId
               }
-              onSelect={onSelectStep}
+              onSelect={onSelect}
             />
           ))}
+          {/* A recording only exists once the run has finished — its session id
+              is present and it's no longer live. */}
+          {run.browserbaseSessionId && !run.isLive && (
+            <ReplayRow
+              run={run}
+              isSelected={
+                selected?.kind === "replay" && selected.runId === run.id
+              }
+              onSelect={onSelect}
+            />
+          )}
         </div>
       ))}
     </div>

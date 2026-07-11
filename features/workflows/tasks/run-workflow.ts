@@ -80,6 +80,10 @@ export const runWorkflowTask = task({
     // LLM routes through Browserbase's Model Gateway (BROWSERBASE_API_KEY), so no
     // separate provider key is needed.
     let stagehand: Stagehand | undefined
+    // The Browserbase session id, captured the moment the session opens so it can
+    // be returned in the run's output — a panel reads it there to fetch the replay
+    // once the run finishes and the recording is available.
+    let browserbaseSessionId: string | undefined
     const getStagehand = async () => {
       if (stagehand) return stagehand
       stagehand = new Stagehand({
@@ -92,6 +96,7 @@ export const runWorkflowTask = task({
         disablePino: true,
       })
       await stagehand.init()
+      browserbaseSessionId = stagehand.browserbaseSessionID
       return stagehand
     }
 
@@ -158,6 +163,6 @@ export const runWorkflowTask = task({
 
     await stagehand?.close()
 
-    return { steps }
+    return { steps, browserbaseSessionId }
   },
 })
