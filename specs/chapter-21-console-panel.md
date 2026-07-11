@@ -74,3 +74,53 @@ Build it as an InspectorPanel in the workflows feature's components folder,
 rendered inside the ConsolePanel next to the logs and only while a step is
 selected.
 ```
+
+---
+
+## Fixes — polishing what the agent got wrong
+
+These aren't part of the build. They're the three things that needed fixing after I
+ran the prompts above on camera, plus the one-line prompt that fixed each. The agent
+doesn't reproduce its output byte-for-byte, so you may not hit the same three — treat
+these as examples of correcting an agent by describing the symptom, not required steps.
+
+### Fix 1 — the start node shows as skipped
+
+The trigger node has no executor, so the run loop skipped it while it was still
+"pending": it looked skipped in the logs and its inspector said it hadn't run.
+
+```
+In @features/workflows/tasks/run-workflow.ts, a node with no executor (the start
+trigger) hits `if (!executor) continue` while still "pending", so it shows as
+skipped forever and its inspector says it hasn't run. Instead of skipping it, mark
+that step "done" and publish before continuing — the trigger does no work and has
+no output, so it should read as completed.
+```
+
+### Fix 2 — spinner inside the accent chip
+
+A running step showed a bare spinner that lost the node's color, and NodeIcon lived
+inside the sidebar, so the panels had to import it from there.
+
+```
+Extract NodeIcon out of @features/workflows/components/right-sidebar.tsx into its
+own file in the workflows components folder, and update right-sidebar,
+@features/workflows/components/logs-panel.tsx, and
+@features/workflows/components/inspector-panel.tsx to import it from there.
+
+Add a `running` prop to NodeIcon that shows a spinner inside the accent chip in
+place of the icon, and use it in the logs list so a running step spins inside its
+colored chip instead of as a bare spinner.
+```
+
+### Fix 3 — a resizable logs/output split
+
+The logs and the output view sat in a fixed 50/50 split; this makes the divider
+draggable.
+
+```
+In @features/workflows/components/console-panel.tsx, replace the plain flex split
+between the logs and the inspector with a horizontal resizable panel group and a
+drag handle from @components/ui/resizable.tsx. Keep the inspector rendered only
+while a step is selected.
+```
