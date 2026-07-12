@@ -27,6 +27,7 @@
     "@liveblocks/react-flow": "^3.22.0",
     "@liveblocks/react-ui": "^3.22.0",
     "@neondatabase/serverless": "^1.1.0",
+    "@sentry/nextjs": "^10.65.0",
     "@shadcn/react": "^0.2.0",
     "@trigger.dev/react-hooks": "4.5.3",
     "@trigger.dev/sdk": "4.5.3",
