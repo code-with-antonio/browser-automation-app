@@ -22,7 +22,7 @@
 
 <p>
   <a href="https://cwa.run/browserbase"><img src="https://img.shields.io/badge/Browserbase-0A0A0A?style=for-the-badge" alt="Browserbase" /></a>&nbsp;
-  <a href="https://cwa.run/trigger.dev"><img src="https://img.shields.io/badge/Trigger.dev-635BFF?style=for-the-badge" alt="Trigger.dev" /></a>&nbsp;
+  <a href="https://cwa.run/trigger"><img src="https://img.shields.io/badge/Trigger.dev-635BFF?style=for-the-badge" alt="Trigger.dev" /></a>&nbsp;
   <a href="https://cwa.run/liveblocks"><img src="https://img.shields.io/badge/Liveblocks-111111?style=for-the-badge" alt="Liveblocks" /></a>&nbsp;
   <a href="https://cwa.run/neon"><img src="https://img.shields.io/badge/Neon-00E599?style=for-the-badge&logo=neon&logoColor=black" alt="Neon" /></a>&nbsp;
   <a href="https://cwa.run/clerk"><img src="https://img.shields.io/badge/Clerk-6C47FF?style=for-the-badge&logo=clerk&logoColor=white" alt="Clerk" /></a>&nbsp;
@@ -154,7 +154,7 @@ git checkout chapter-16-browserbase-setup  # example: jump to Browserbase setup
 - Node.js and npm
 - [Clerk](https://cwa.run/clerk) application with Organizations enabled
 - PostgreSQL database, such as [Neon](https://cwa.run/neon)
-- [Trigger.dev](https://cwa.run/trigger.dev) project
+- [Trigger.dev](https://cwa.run/trigger) project
 - [Liveblocks](https://cwa.run/liveblocks) project
 - [Browserbase](https://cwa.run/browserbase) account
 - [Resend](https://resend.com/) account
